@@ -10,6 +10,9 @@ let g:loaded_tagman = 100
 let s:save_cpo = &cpo
 set cpo&vim
 
+
+" Settings {{{
+
 " Auto generate ctags
 if !exists('g:tagman_auto_generate')
   let g:tagman_auto_generate = 1
@@ -19,41 +22,46 @@ if !exists("g:tagman_ctags_binary")
   let g:tagman_ctags_binary = "ctags"
 endif
 
-" Project tags
-if !exists('g:tagman_project_tags_command')
-  let g:tagman_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
-endif
-
 " Library tags
-if !exists('g:tagman_library_tags_command')
-  let g:tagman_library_tags_command = "{CTAGS} -R {OPTIONS} `bundle show --paths` node_modules 2>/dev/null"
+if !exists('g:tagman_library_tag_paths')
+  let g:tagman_library_tag_paths = "`bundle show --paths` node_modules vendor"
 endif
 
-" Ignored files and directories list
+" Files that contain paths to be ignored
 if !exists('g:tagman_ignore_files')
   let g:tagman_ignore_files = ['.gitignore', '.svnignore', '.cvsignore']
 endif
 
-" A list of directories used as a place for tags.
-if !exists('g:tagman_directories')
-  let g:tagman_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
+" A list of directories used to store tags.
+if !exists('g:tagman_tag_directories')
+  let g:tagman_tag_directories = [".git", ".hg", ".svn", "CVS"]
 endif
 
+" Explicit paths to ignore
+if !exists('g:tagman_ignores')
+  let g:tagman_ignores = ['node_modules', '*vendor', '*.min.js']
+endif
 
-" TODO enable or disable tags
-" set tags+=.git/tags
+" }}}
 
-" TODO Bind to save event
+call tagman#add_main_tag_path()
+
 " TODO Debounce calls
 
 augroup augrp__tagman
   autocmd!
-  " autocmd BufWritePost * :call tagman#auto_ctags()
-  " autocmd BufReadPost  * :call tagman#auto_settags()
+
+  if g:tagman_auto_generate
+    autocmd BufWritePost * :call tagman#build_tags(0)
+  endif
 augroup END
 
-command! -bar -bang -count=0 -nargs=0 ListTagFiles :call tagman#list_tag_files()
-command! -bar -bang -count=0 -nargs=0 EnableLibraryTags :call tagman#enable_library_tags()
-command! -bar -bang -count=0 -nargs=0 DisableLibraryTags :call tagman#disable_library_tags()
+command! -count=0 -nargs=0 ListTagFiles :call tagman#list_tag_files()
+command! -count=0 -nargs=0 EnableLibTags :call tagman#enable_library_tags()
+command! -count=0 -nargs=0 DisableLibTags :call tagman#disable_library_tags()
+
+command! -bang -count=0 -nargs=0 BuildTags :call tagman#build_tags(<bang>0)
+command! -count=0 -nargs=0 BuildLibTags :call tagman#build_library_tags()
+
 
 let &cpo = s:save_cpo
