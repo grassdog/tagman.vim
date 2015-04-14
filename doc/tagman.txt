@@ -1,0 +1,108 @@
+*tagman.txt* Manage your ctags from Vim
+
+Author:  Ray Grasso <http://raygrasso.com/>
+
+This plugin is only available if 'compatible' is not set.
+
+INTRODUCTION                                    *tagman*
+
+Yet another plugin for automatically generating ctags files for your projects
+when files are saved and setting *tags* accordingly.
+
+By default vendor or library code such as gem files and node modules are
+ignored when generating project tag files.
+
+Tagman also ignores all files listed in source control ignore files such as
+.gitignore.
+
+Library tag files can be generated separately and enabled or disabled as
+desired.
+
+All ctags operations are executed in the background so as not to hold up the
+UI.
+
+Tag files are automatically kept in source control directories at the top of
+projects (as defined by *tagman_tag_dirs*).
+
+Tagman will only build tag files if a tag file already exists. You can enable
+tags for a project by running *:BuildTags!*.
+
+Tagman borrows heavily from https://github.com/szw/vim-tags.
+
+
+COMMANDS                                         *tagman-commands*
+
+                                                *:BuildTags*
+
+:BuildTags              Build all of the tags for your project. Note that by
+                        default this is automatically called when writing files.
+                        It will only build files if the tag file exists.
+
+                                                *:BuildTags!*
+
+:BuildTags!             Same as *:BuildTags* but will create the tag file if
+                        it doesn't exist effectively enabling tagman for
+                        a project.
+
+                                                *:BuildLibTags*
+:BuildLibTags
+                        Builds a separate tag file for your library files.
+
+
+                                                *:EnableLibTags*
+:EnableLibTags
+                        Add library tag file to *tags*.
+
+                                                *:DisableLibTags*
+:DisableLibTags
+                        Remove library tag file to *tags*.
+
+                                                *:ListTagFiles*
+
+:ListTagFiles           List current files in use.
+
+
+CONFIGURATION                                   *tagman-configuration*
+
+Tagman has various configuration options.
+
+                                                *tagman_auto_generate*
+
+Default: `1`
+
+If enabled, Tagman will generate tags on file saving >
+
+    let g:tagman_auto_generate = 1
+<
+                                                *tagman_ctags_binary*
+
+Default: `ctags`
+
+This is the Ctags binary that will be run to generate tags.
+
+
+                                                *tagman_ignore_files*
+
+Default: `['.gitignore', '.svnignore', '.cvsignore']`
+
+Files containing paths to ignored files.
+
+                                                *tagman_tag_directories*
+
+Default: `['.git', '.hg', '.svn', 'CVS']`
+
+Directories searched in order to store tag files in.
+
+                                                *tagman_ignores*
+
+Default: `['node_modules', '*vendor', '*.min.js']`
+
+Explicit paths to ignore when building a project's tag file.
+
+                                                *tagman_library_tag_paths*
+
+Default: `bundle show --paths` node_modules vendor
+
+Ctags arguments that identify library and vendor files.
+
+ vim:tw=78:et:ft=help:norl:
